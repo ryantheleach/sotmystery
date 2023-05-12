@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>rotate</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <script>
+            var txt = [[
+                "BQF",
+                "FMH",
+                "DKH",
+                "BOD",
+                "HKF",
+                "DOH",
+                "DQB",
+                "BMF"
+            ],[
+                "PNB",
+                "JNF",
+                "HNL",
+                "DNR",
+                "JNH",
+                "LND",
+                "BNR",
+                "FNP",
+            ],[
+                "ASL",
+                "CUR",
+                "PVI",
+                "JTG",
+                "GVR",
+                "ATP",
+                "JSC",
+                "LUI",
+            ],[
+                "BSG",
+                "FUA",
+                "CVH",
+                "ITD",
+                "HVA",
+                "DTC",
+                "ISB",
+                "GUF",
+            ],[
+                "AYPP",
+                "CZJJ",
+                "LLXI",
+                "RRWG",
+                "GYJJ",
+                "AZLL",
+                "RRXC",
+                "PPWI",
+            ]];
+            var rots = [0,0,0,0,0];
+            var flips = [false, false, false, false, false];
+
+            let banana = 0;
+            let coconut = 1;
+            let pome = 2;
+            let mango = 3;
+            let pineapple = 4;
+            function imgWindow(x, e) {
+                var rot = rots[x];
+                var flip = flips[x];
+                rot = rot + 1;
+                if (rot >= 4) {
+                    rot = 0;
+                    flip = !flip;
+                }
+                if(flip) {
+                    e.style.transform = "rotate("+(rot-2)*90+"deg) scaleX(-1)";
+                    e.style.border = "red 1px solid";
+                } else {
+                    e.style.transform = "rotate("+rot*90+"deg)";
+                    e.style.border = "black 1px solid";
+                }
+                
+                rots[x] = rot;
+                flips[x] = flip;
+                txti=flip?rot+4:rot;
+                document.getElementById(x).textContent = txt[x][txti];
+            }
+        </script>
+        <style>
+            body {
+                padding: 0;
+                padding-top: 100px;
+                margin: 0;
+            }
+            .flex-container {
+                display: flex;
+                flex-wrap: nowrap;
+                width: 100dvw;
+            }
+
+            .child {
+                display: block;
+                object-fit: contain;
+                flex: 1;
+                width: 20%;
+                height: auto;
+                box-sizing: border-box;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="flex-container">
+            <img class="child" onclick="imgWindow(banana, this)" src="Banana.png" />
+            <img class="child" onclick="imgWindow(coconut, this)" src="Coconut.png" />
+            <img class="child" onclick="imgWindow(pome, this)" src="Pomegranate.png" />
+            <img class="child" onclick="imgWindow(mango, this)" src="Mango.png" />
+            <img class="child" onclick="imgWindow(pineapple, this)" src="Pineapple.png" />
+        </div>
+        <div style="margin-top: 100px;">
+            <table border="1">
+                <tr><td>Banana: </td>     <td id="0">BQF</td></tr>
+                <tr><td>Coconut: </td>    <td id="1">PNB</td></tr>
+                <tr><td>Pomegranate: </td><td id="2"></td></tr>
+                <tr><td>Mango: </td>      <td id="3"></td></tr>
+                <tr><td>Pineapple: </td>  <td id="4"></td></tr>
+            </table>
+        </div>
+    </body>
+</html>
