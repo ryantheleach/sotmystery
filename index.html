@@ -20,11 +20,30 @@
         .encoded {
             font-family: pigpen;
         }
+
         table {
             text-align: center;
         }
+
+        .key {
+            padding: 0 16px;
+        }
     </style>
     <script>
+        const default_cipher = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        function validateCipher(x) {
+            return x.length == default_cipher.length;
+        }
+
+        const url = new URL(window.location);
+        var cipher_in = url.searchParams.get("cipher") + "";
+        if (cipher_in.length != default_cipher.length) {
+            cipher = default_cipher.split("");
+        } else {
+            cipher = cipher_in.toUpperCase().split("");
+        }
+
         var txt = [[
             "BQF",
             "FMH",
@@ -71,7 +90,6 @@
             "RRXC",
             "PPWI",
         ]];
-        const url = new URL(window.location);
         var rots = url.searchParams.get("rotation") | null;
         var flips = url.searchParams.get("flip") | null;
 
@@ -106,10 +124,39 @@
             update();
 
         }
-        function update() {
+
+        function substitute(s) {
+            return s.split("").map(c => cipher[default_cipher.indexOf(c)]).join("");
+        }
+
+        function update(firstrun) {
+            var cipher_element = document.getElementById("cipher");
             if (rots === 0 || flips === 0) {
                 solution();
             }
+
+            if(firstrun) {
+                cipher_element.value = cipher.join("");
+            }
+
+            if (validateCipher(cipher_element.value)) {
+                cipher = cipher_element.value.toUpperCase().split("");
+                cipher_element.setCustomValidity("");
+            } else {
+                if (cipher_element.value == "")
+                    cipher_element.value = default_cipher;
+                else
+                    cipher_element.setCustomValidity("Invalid Cipher");
+            }
+
+                var showImg = cipher.join("") === default_cipher;
+                document.getElementById("defaultKey").style.visibility = showImg ? "visible" : "hidden";
+
+                const url = new URL(window.location);
+                url.searchParams.set("cipher", cipher.join(""));
+                url.searchParams.set("rotation", rots);
+                url.searchParams.set("flip", flips);
+                history.pushState({}, "", url);
 
             for (let x = 0; x < 5; x++) {
                 var rot = rots[x];
@@ -123,18 +170,15 @@
                     e.style.border = "black 1px solid";
                 }
 
-                const url = new URL(window.location);
-                url.searchParams.set("rotation", rots);
-                url.searchParams.set("flip", flips);
-                history.pushState({}, "", url);
-
                 txti = flip ? rot + 4 : rot;
-                document.getElementById(x).textContent = txt[x][txti];
+                document.getElementById(x).textContent = substitute(txt[x][txti]);
                 document.getElementById("encoded" + x).textContent = txt[x][txti];
                 document.getElementById("desc" + x).textContent = "Rotate: " + rot + " Flipped: " + flip;
+
+                default_cipher.split("").forEach((c, index) => document.getElementById(c).value = cipher[index]);
             }
         }
-        window.addEventListener('load', () => { setTimeout(update, 200) }, false);
+        window.addEventListener('load', () => { setTimeout(()=>update(true), 200) }, false);
     </script>
     <style>
         body {
@@ -156,7 +200,8 @@
             height: auto;
             box-sizing: border-box;
         }
-        .child > table {
+
+        .child>table {
             margin: 0 auto;
         }
     </style>
@@ -165,70 +210,150 @@
 <body>
     <div class="flex-container" style="margin-top: 30px;">
         <div>
-            <button onclick="reset()">Reset to Rare</button>
-            <button onclick="solution()">Reset to Solution</button>
+            <button onclick="reset()">Reset to Rare</button><br/>
+            <button onclick="solution()">Reset to Solution</button><br/>
+            <input disabled style="width: 26em;" onblur="update()" class="encoded" value="ABCDEFGHIJKLMNOPQRSTUVWXYZ"/><br/>
+            <input id="cipher" minlength="26" maxlength="26" style="width: 26em;" onblur="update()" />
         </div>
-        <div>
-            <table border="1" style="border:1px solid black;border-collapse:collapse;">
-                <tr>
-                    <td>latin</td>
-                    <td>a</td>
-                    <td>b</td>
-                    <td>c</td>
-                    <td>d</td>
-                    <td>e</td>
-                    <td>f</td>
-                    <td>g</td>
-                    <td>h</td>
-                    <td>i</td>
-                    <td>j</td>
-                    <td>k</td>
-                    <td>l</td>
-                    <td>m</td>
-                    <td>n</td>
-                    <td>o</td>
-                    <td>p</td>
-                    <td>q</td>
-                    <td>r</td>
-                    <td>s</td>
-                    <td>t</td>
-                    <td>u</td>
-                    <td>v</td>
-                    <td>w</td>
-                    <td>x</td>
-                    <td>y</td>
-                    <td>z</td>
-                </tr>
-                <tr class="encoded">
-                    <td style="font-family: initial;">pigpen</td>
-                    <td>a</td>
-                    <td>b</td>
-                    <td>c</td>
-                    <td>d</td>
-                    <td>e</td>
-                    <td>f</td>
-                    <td>g</td>
-                    <td>h</td>
-                    <td>i</td>
-                    <td>j</td>
-                    <td>k</td>
-                    <td>l</td>
-                    <td>m</td>
-                    <td>n</td>
-                    <td>o</td>
-                    <td>p</td>
-                    <td>q</td>
-                    <td>r</td>
-                    <td>s</td>
-                    <td>t</td>
-                    <td>u</td>
-                    <td>v</td>
-                    <td>w</td>
-                    <td>x</td>
-                    <td>y</td>
-                    <td>z</td>
-                </tr>
-            </table>
+        <div style="font-size: large;" class="flex-container">
+            <div class="key">
+                <table border="1" style="border:1px solid black;border-collapse:collapse;">
+                    <tr>
+                        <td class="encoded">a</td>
+                        <td class="encoded">b</td>
+                        <td class="encoded">c</td>
+                        <td><input type="text" disabled id="A" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="B" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="C" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                    </tr>
+                    <tr>
+                        <td class="encoded">d</td>
+                        <td class="encoded">e</td>
+                        <td class="encoded">f</td>
+                        <td><input type="text" disabled id="D" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="E" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="F" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                    </tr>
+                    <tr>
+                        <td class="encoded">g</td>
+                        <td class="encoded">h</td>
+                        <td class="encoded">i</td>
+                        <td><input type="text" disabled id="G" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="H" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="I" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="key">
+                <table border="1" style="border:1px solid black;border-collapse:collapse;">
+                    <tr>
+                        <td class="encoded">j</td>
+                        <td class="encoded">k</td>
+                        <td class="encoded">l</td>
+                        <td><input type="text" disabled id="J" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="K" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="L" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                    </tr>
+                    <tr>
+                        <td class="encoded">m</td>
+                        <td class="encoded">n</td>
+                        <td class="encoded">o</td>
+                        <td><input type="text" disabled id="M" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="N" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="O" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                    </tr>
+                    <tr>
+                        <td class="encoded">p</td>
+                        <td class="encoded">q</td>
+                        <td class="encoded">r</td>
+                        <td><input type="text" disabled id="P" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="Q" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="R" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="key">
+                <table border="1" style="border:1px solid black;border-collapse:collapse;">
+                    <tr>
+                        <td class="encoded"></td>
+                        <td class="encoded">s</td>
+                        <td class="encoded"></td>
+                        <td><input type="text" disabled size="1" maxlength="1" minlength="1" style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="S" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled size="1" maxlength="1" minlength="1" style="width: 1em;" /></td>
+                    </tr>
+                    <tr>
+                        <td class="encoded">t</td>
+                        <td class="encoded"></td>
+                        <td class="encoded">u</td>
+                        <td><input type="text" disabled id="T" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled size="1" maxlength="1" minlength="1" style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="U" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                    </tr>
+                    <tr>
+                        <td class="encoded"></td>
+                        <td class="encoded">v</td>
+                        <td class="encoded"></td>
+                        <td><input type="text" disabled size="1" maxlength="1" minlength="1" style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="V" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled size="1" maxlength="1" minlength="1" style="width: 1em;" /></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="key">
+                <table border="1" style="border:1px solid black;border-collapse:collapse;">
+                    <tr>
+                        <td class="encoded"></td>
+                        <td class="encoded">w</td>
+                        <td class="encoded"></td>
+                        <td><input type="text" disabled size="1" maxlength="1" minlength="1" style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="W" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled size="1" maxlength="1" minlength="1" style="width: 1em;" /></td>
+                    </tr>
+                    <tr>
+                        <td class="encoded">x</td>
+                        <td class="encoded"></td>
+                        <td class="encoded">y</td>
+                        <td><input type="text" disabled id="X" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled size="1" maxlength="1" minlength="1" style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="Y" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                    </tr>
+                    <tr>
+                        <td class="encoded"></td>
+                        <td class="encoded">z</td>
+                        <td class="encoded"></td>
+                        <td><input type="text" disabled size="1" maxlength="1" minlength="1" style="width: 1em;" /></td>
+                        <td><input type="text" disabled id="Z" size="1" maxlength="1" minlength="1"
+                                style="width: 1em;" /></td>
+                        <td><input type="text" disabled size="1" maxlength="1" minlength="1" style="width: 1em;" /></td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
     <div class="flex-container" style="margin-top: 100px;">
@@ -247,33 +372,49 @@
                 <td id="desc0"></td>
             </table>
         </div>
-        <div class="child"><table border="1"><tr>
-            <td>Coconut: </td>
-            <td id="1"></td>
-            <td id="encoded1" class="encoded"></td>
-            <td id="desc1"></td>
-        </tr></table></div>
-        <div class="child"><table border="1"><tr>
-            <td>Pomegranate: </td>
-            <td id="2"></td>
-            <td id="encoded2" class="encoded"></td>
-            <td id="desc2"></td>
-        </tr></table></div>
-        <div class="child"><table border="1"><tr>
-            <td>Mango: </td>
-            <td id="3"></td>
-            <td id="encoded3" class="encoded"></td>
-            <td id="desc3"></td>
-        </tr></table></div>
-        <div class="child"><table border="1"><tr>
-            <td>Pineapple: </td>
-            <td id="4"></td>
-            <td id="encoded4" class="encoded"></td>
-            <td id="desc4"></td>
-        </tr></table></div>
+        <div class="child">
+            <table border="1">
+                <tr>
+                    <td>Coconut: </td>
+                    <td id="1"></td>
+                    <td id="encoded1" class="encoded"></td>
+                    <td id="desc1"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="child">
+            <table border="1">
+                <tr>
+                    <td>Pomegranate: </td>
+                    <td id="2"></td>
+                    <td id="encoded2" class="encoded"></td>
+                    <td id="desc2"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="child">
+            <table border="1">
+                <tr>
+                    <td>Mango: </td>
+                    <td id="3"></td>
+                    <td id="encoded3" class="encoded"></td>
+                    <td id="desc3"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="child">
+            <table border="1">
+                <tr>
+                    <td>Pineapple: </td>
+                    <td id="4"></td>
+                    <td id="encoded4" class="encoded"></td>
+                    <td id="desc4"></td>
+                </tr>
+            </table>
+        </div>
     </div>
     <div>
-        <img src="Pigpen_cipher_key_landscape.png" />
+        <img id="defaultKey" src="Pigpen_cipher_key_landscape.png" />
     </div>
 </body>
 
