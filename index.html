@@ -20,6 +20,9 @@
         .encoded {
             font-family: pigpen;
         }
+        table {
+            text-align: center;
+        }
     </style>
     <script>
         var txt = [[
@@ -161,8 +164,72 @@
 
 <body>
     <div class="flex-container" style="margin-top: 30px;">
-        <button onclick="reset()">Reset to Rare</button>
-        <button onclick="solution()">Reset to Solution</button>
+        <div>
+            <button onclick="reset()">Reset to Rare</button>
+            <button onclick="solution()">Reset to Solution</button>
+        </div>
+        <div>
+            <table border="1" style="border:1px solid black;border-collapse:collapse;">
+                <tr>
+                    <td>latin</td>
+                    <td>a</td>
+                    <td>b</td>
+                    <td>c</td>
+                    <td>d</td>
+                    <td>e</td>
+                    <td>f</td>
+                    <td>g</td>
+                    <td>h</td>
+                    <td>i</td>
+                    <td>j</td>
+                    <td>k</td>
+                    <td>l</td>
+                    <td>m</td>
+                    <td>n</td>
+                    <td>o</td>
+                    <td>p</td>
+                    <td>q</td>
+                    <td>r</td>
+                    <td>s</td>
+                    <td>t</td>
+                    <td>u</td>
+                    <td>v</td>
+                    <td>w</td>
+                    <td>x</td>
+                    <td>y</td>
+                    <td>z</td>
+                </tr>
+                <tr class="encoded">
+                    <td style="font-family: initial;">pigpen</td>
+                    <td>a</td>
+                    <td>b</td>
+                    <td>c</td>
+                    <td>d</td>
+                    <td>e</td>
+                    <td>f</td>
+                    <td>g</td>
+                    <td>h</td>
+                    <td>i</td>
+                    <td>j</td>
+                    <td>k</td>
+                    <td>l</td>
+                    <td>m</td>
+                    <td>n</td>
+                    <td>o</td>
+                    <td>p</td>
+                    <td>q</td>
+                    <td>r</td>
+                    <td>s</td>
+                    <td>t</td>
+                    <td>u</td>
+                    <td>v</td>
+                    <td>w</td>
+                    <td>x</td>
+                    <td>y</td>
+                    <td>z</td>
+                </tr>
+            </table>
+        </div>
     </div>
     <div class="flex-container" style="margin-top: 100px;">
         <img id="img0" class="child" onclick="imgWindow(banana, this)" src="Banana.png" />
