@@ -146,6 +146,11 @@
             update();
         }
 
+        function setPreset() {
+            document.getElementById("cipher").value = document.getElementById("presets").value;
+            update();
+        }
+
         function imgWindow(x, e) {
             var rot = rots[x];
             var flip = flips[x];
@@ -272,6 +277,18 @@
             <button onclick="solution()">Reset to Solution</button><br/>
             <input disabled style="width: 26em;" onblur="update()" class="encoded" value="ABCDEFGHIJKLMNOPQRSTUVWXYZ"/><br/>
             <input id="cipher" minlength="26" maxlength="26" style="width: 26em;" onblur="update()" />
+            <select id="presets" onChange="setPreset()"> <option selected="true" disabled="disabled">presets</option>
+                <option value="ABCDEFGHIJKLMNOPQRSTUVWXYZ">#0 ⌗ ⌗• ✕ ✕•</option>
+                <option value="ABCDEFGHIJKLMNOPQRSTVUWXZY">#1 ⌗ ⌗• ✕⟲ ✕•⟲</option>
+                <option value="ABCDEFGHINOPQRSTUVJKLMWXYZ">#2 ⌗ ✕ ⌗• ✕•</option>
+                <option value="NOPQRSTUVWXYZABCDEFGHIJKLM">#3 ⌗• ✕• ⌗ ✕</option>
+                <option value="IJKLMNOPQRSTUVWXYZABCDEFGH">#4 ✕ ✕• ⌗ ⌗•</option>
+                <option value="ACEGIKMOQBDFHJLNPRSUWYTVXZ">#5 ⌗ ✕ alternating</option>
+                <option value="ACEGIKMOQBDFHJLNPRSUYWTVZX">#6 ⌗ ✕⟲ alternating</option>
+                <option value="ABCDEFGHILMNOPRSTV--------">#7 Heinrich Cornelius Agrippa von Nettelsheim</option>
+                <option value="BDFHJLNPRACEGIKMOQT-V-S-U-">#8 La Buse</option>
+                <option value="BDFHJLNPRACEGIKMOQTZVXSYUW">#9 La Buse (predicted finished)</option>
+            </select>
         </div>
         <div style="font-size: large;" class="flex-container">
             <div class="key">
