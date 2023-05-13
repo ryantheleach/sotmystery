@@ -28,6 +28,29 @@
         .key {
             padding: 0 16px;
         }
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        .flex-container {
+            display: flex;
+            flex-wrap: nowrap;
+            width: 100dvw;
+        }
+
+        .child {
+            display: block;
+            object-fit: contain;
+            flex: 1;
+            width: 20%;
+            height: auto;
+            box-sizing: border-box;
+        }
+
+        .child>table {
+            margin: 0 auto;
+        }
     </style>
     <script>
         const default_cipher = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -149,15 +172,17 @@
                     cipher_element.setCustomValidity("Invalid Cipher");
             }
 
-                var showImg = cipher.join("") === default_cipher;
-                document.getElementById("defaultKey").style.visibility = showImg ? "visible" : "hidden";
+            var showImg = cipher.join("") === default_cipher;
+            document.getElementById("defaultKey").style.visibility = showImg ? "visible" : "hidden";
 
-                const url = new URL(window.location);
-                url.searchParams.set("cipher", cipher.join(""));
-                url.searchParams.set("rotation", rots);
-                url.searchParams.set("flip", flips);
-                history.pushState({}, "", url);
+            const url = new URL(window.location);
+            url.searchParams.set("cipher", cipher.join(""));
+            url.searchParams.set("rotation", rots);
+            url.searchParams.set("flip", flips);
+            history.pushState({}, "", url);
 
+
+            const total = [];
             for (let x = 0; x < 5; x++) {
                 var rot = rots[x];
                 var flip = flips[x];
@@ -171,40 +196,19 @@
                 }
 
                 txti = flip ? rot + 4 : rot;
-                document.getElementById(x).textContent = substitute(txt[x][txti]);
+                chunk = substitute(txt[x][txti]);
+                total.push(chunk);
+                document.getElementById(x).textContent = chunk;
                 document.getElementById("encoded" + x).textContent = txt[x][txti];
                 document.getElementById("desc" + x).textContent = "Rotate: " + rot + " Flipped: " + flip;
-
+                
                 default_cipher.split("").forEach((c, index) => document.getElementById(c).value = cipher[index]);
             }
+            document.getElementById("total1").value = total.join("");
+            document.getElementById("total2").value = total.join(".");
         }
         window.addEventListener('load', () => { setTimeout(()=>update(true), 200) }, false);
     </script>
-    <style>
-        body {
-            padding: 0;
-            margin: 0;
-        }
-
-        .flex-container {
-            display: flex;
-            flex-wrap: nowrap;
-            width: 100dvw;
-        }
-
-        .child {
-            display: block;
-            object-fit: contain;
-            flex: 1;
-            width: 20%;
-            height: auto;
-            box-sizing: border-box;
-        }
-
-        .child>table {
-            margin: 0 auto;
-        }
-    </style>
 </head>
 
 <body>
@@ -412,6 +416,14 @@
                 </tr>
             </table>
         </div>
+    </div>
+    <div class="flex-container" style="padding-top: 16px;">
+        <div class="child"></div>
+        <div class="child"></div>
+        <input id="total1" disabled class="child"/>
+        <input id="total2" disabled class="child"/>
+        <div class="child"></div>
+        <div class="child"></div>
     </div>
     <div>
         <img id="defaultKey" src="Pigpen_cipher_key_landscape.png" />
