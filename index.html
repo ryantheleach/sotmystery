@@ -127,7 +127,7 @@
 
                 txti = flip ? rot + 4 : rot;
                 document.getElementById(x).textContent = txt[x][txti];
-                document.getElementById("encoded"+x).textContent = txt[x][txti];
+                document.getElementById("encoded" + x).textContent = txt[x][txti];
                 document.getElementById("desc" + x).textContent = "Rotate: " + rot + " Flipped: " + flip;
             }
         }
@@ -136,7 +136,6 @@
     <style>
         body {
             padding: 0;
-            padding-top: 100px;
             margin: 0;
         }
 
@@ -154,55 +153,60 @@
             height: auto;
             box-sizing: border-box;
         }
+        .child > table {
+            margin: 0 auto;
+        }
     </style>
 </head>
 
 <body>
-    <div class="flex-container">
+    <div class="flex-container" style="margin-top: 30px;">
+        <button onclick="reset()">Reset to Rare</button>
+        <button onclick="solution()">Reset to Solution</button>
+    </div>
+    <div class="flex-container" style="margin-top: 100px;">
         <img id="img0" class="child" onclick="imgWindow(banana, this)" src="Banana.png" />
         <img id="img1" class="child" onclick="imgWindow(coconut, this)" src="Coconut.png" />
         <img id="img2" class="child" onclick="imgWindow(pome, this)" src="Pomegranate.png" />
         <img id="img3" class="child" onclick="imgWindow(mango, this)" src="Mango.png" />
         <img id="img4" class="child" onclick="imgWindow(pineapple, this)" src="Pineapple.png" />
     </div>
-    <div style="margin-top: 100px;">
-        <table border="1">
-            <tr>
+    <div class="flex-container" style="margin-top: 100px;">
+        <div class="child">
+            <table border="1">
                 <td>Banana: </td>
                 <td id="0"></td>
                 <td id="encoded0" class="encoded"></td>
                 <td id="desc0"></td>
-            </tr>
-            <tr>
-                <td>Coconut: </td>
-                <td id="1"></td>
-                <td id="encoded1" class="encoded"></td>
-                <td id="desc1"></td>
-            </tr>
-            <tr>
-                <td>Pomegranate: </td>
-                <td id="2"></td>
-                <td id="encoded2" class="encoded"></td>
-                <td id="desc2"></td>
-            </tr>
-            <tr>
-                <td>Mango: </td>
-                <td id="3"></td>
-                <td id="encoded3" class="encoded"></td>
-                <td id="desc3"></td>
-            </tr>
-            <tr>
-                <td>Pineapple: </td>
-                <td id="4"></td>
-                <td id="encoded4" class="encoded"></td>
-                <td id="desc4"></td>
-            </tr>
-        </table>
-        <button onclick="reset()">Reset to Rare</button>
-        <button onclick="solution()">Reset to Solution</button>
+            </table>
+        </div>
+        <div class="child"><table border="1"><tr>
+            <td>Coconut: </td>
+            <td id="1"></td>
+            <td id="encoded1" class="encoded"></td>
+            <td id="desc1"></td>
+        </tr></table></div>
+        <div class="child"><table border="1"><tr>
+            <td>Pomegranate: </td>
+            <td id="2"></td>
+            <td id="encoded2" class="encoded"></td>
+            <td id="desc2"></td>
+        </tr></table></div>
+        <div class="child"><table border="1"><tr>
+            <td>Mango: </td>
+            <td id="3"></td>
+            <td id="encoded3" class="encoded"></td>
+            <td id="desc3"></td>
+        </tr></table></div>
+        <div class="child"><table border="1"><tr>
+            <td>Pineapple: </td>
+            <td id="4"></td>
+            <td id="encoded4" class="encoded"></td>
+            <td id="desc4"></td>
+        </tr></table></div>
     </div>
     <div>
-        <img src="Pigpen_cipher_key.png" />
+        <img src="Pigpen_cipher_key_landscape.png" />
     </div>
 </body>
 
