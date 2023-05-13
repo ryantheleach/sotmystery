@@ -4,167 +4,206 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>rotate</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-        <script>
-            var txt = [[
-                "BQF",
-                "FMH",
-                "DKH",
-                "BOD",
-                "HKF",
-                "DOH",
-                "DQB",
-                "BMF"
-            ],[
-                "PNB",
-                "JNF",
-                "HNL",
-                "DNR",
-                "JNH",
-                "LND",
-                "BNR",
-                "FNP",
-            ],[
-                "ASL",
-                "CUR",
-                "PVI",
-                "JTG",
-                "GVR",
-                "ATP",
-                "JSC",
-                "LUI",
-            ],[
-                "BSG",
-                "FUA",
-                "CVH",
-                "ITD",
-                "HVA",
-                "DTC",
-                "ISB",
-                "GUF",
-            ],[
-                "AYPP",
-                "CZJJ",
-                "LLXI",
-                "RRWG",
-                "GYJJ",
-                "AZLL",
-                "RRXC",
-                "PPWI",
-            ]];
-            const url = new URL(window.location);
-            var rots = url.searchParams.get("rotation") | null;
-            var flips = url.searchParams.get("flip") | null;
 
-            let banana = 0;
-            let coconut = 1;
-            let pome = 2;
-            let mango = 3;
-            let pineapple = 4;
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>rotate</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        @font-face {
+            font-family: pigpen;
+            src: url(Pigpen_Cipher_Regular.otf);
+        }
 
-            function solution() {
-                rots = [2, 2, 0, 3, 0];
-                flips = [false, true, false, false, true];
-                update();
+        .encoded {
+            font-family: pigpen;
+        }
+    </style>
+    <script>
+        var txt = [[
+            "BQF",
+            "FMH",
+            "DKH",
+            "BOD",
+            "HKF",
+            "DOH",
+            "DQB",
+            "BMF"
+        ], [
+            "PNB",
+            "JNF",
+            "HNL",
+            "DNR",
+            "JNH",
+            "LND",
+            "BNR",
+            "FNP",
+        ], [
+            "ASL",
+            "CUR",
+            "PVI",
+            "JTG",
+            "GVR",
+            "ATP",
+            "JSC",
+            "LUI",
+        ], [
+            "BSG",
+            "FUA",
+            "CVH",
+            "ITD",
+            "HVA",
+            "DTC",
+            "ISB",
+            "GUF",
+        ], [
+            "AYPP",
+            "CZJJ",
+            "LLXI",
+            "RRWG",
+            "GYJJ",
+            "AZLL",
+            "RRXC",
+            "PPWI",
+        ]];
+        const url = new URL(window.location);
+        var rots = url.searchParams.get("rotation") | null;
+        var flips = url.searchParams.get("flip") | null;
+
+        let banana = 0;
+        let coconut = 1;
+        let pome = 2;
+        let mango = 3;
+        let pineapple = 4;
+
+        function solution() {
+            rots = [2, 2, 0, 3, 0];
+            flips = [false, true, false, false, true];
+            update();
+        }
+
+        function reset() {
+            rots = [0, 0, 0, 0, 0];
+            flips = [false, false, false, false, false];
+            update();
+        }
+
+        function imgWindow(x, e) {
+            var rot = rots[x];
+            var flip = flips[x];
+            rot = rot + 1;
+            if (rot >= 4) {
+                rot = 0;
+                flip = !flip;
+            }
+            rots[x] = rot;
+            flips[x] = flip;
+            update();
+
+        }
+        function update() {
+            if (rots === 0 || flips === 0) {
+                solution();
             }
 
-            function reset() {
-                rots = [0, 0, 0, 0, 0];
-                flips = [false, false, false, false, false];
-                update();
-            }
-
-            function imgWindow(x, e) {
+            for (let x = 0; x < 5; x++) {
                 var rot = rots[x];
                 var flip = flips[x];
-                rot = rot + 1;
-                if (rot >= 4) {
-                    rot = 0;
-                    flip = !flip;
-                }
-                rots[x] = rot;
-                flips[x] = flip;
-                update();
-                
-            }
-            function update() {
-                if (rots === 0 || flips === 0) {
-                    solution();
+                e = document.getElementById("img" + x);
+                if (flip) {
+                    e.style.transform = "rotate(" + (rot - 2) * 90 + "deg) scaleX(-1)";
+                    e.style.border = "red 1px solid";
+                } else {
+                    e.style.transform = "rotate(" + rot * 90 + "deg)";
+                    e.style.border = "black 1px solid";
                 }
 
-                for (let x = 0; x < 5; x++) {
-                    var rot = rots[x];
-                    var flip = flips[x];
-                    e = document.getElementById("img"+x);
-                    if(flip) {
-                        e.style.transform = "rotate("+(rot-2)*90+"deg) scaleX(-1)";
-                        e.style.border = "red 1px solid";
-                    } else {
-                        e.style.transform = "rotate("+rot*90+"deg)";
-                        e.style.border = "black 1px solid";
-                    }
-                    
-                    const url = new URL(window.location);
-                    url.searchParams.set("rotation", rots);
-                    url.searchParams.set("flip", flips);
-                    history.pushState({}, "", url);
-                    
-                    txti=flip?rot+4:rot;
-                    document.getElementById(x).textContent = txt[x][txti];
-                    document.getElementById("desc" + x).textContent = "Rotate: " + rot + " Flipped: " + flip;
-                }
-            }
-            window.addEventListener('load', ()=>{setTimeout(update, 200)}, false);
-        </script>
-        <style>
-            body {
-                padding: 0;
-                padding-top: 100px;
-                margin: 0;
-            }
-            .flex-container {
-                display: flex;
-                flex-wrap: nowrap;
-                width: 100dvw;
-            }
+                const url = new URL(window.location);
+                url.searchParams.set("rotation", rots);
+                url.searchParams.set("flip", flips);
+                history.pushState({}, "", url);
 
-            .child {
-                display: block;
-                object-fit: contain;
-                flex: 1;
-                width: 20%;
-                height: auto;
-                box-sizing: border-box;
+                txti = flip ? rot + 4 : rot;
+                document.getElementById(x).textContent = txt[x][txti];
+                document.getElementById("encoded"+x).textContent = txt[x][txti];
+                document.getElementById("desc" + x).textContent = "Rotate: " + rot + " Flipped: " + flip;
             }
-        </style>
-    </head>
-    <body>
-        <div class="flex-container">
-            <img id="img0" class="child" onclick="imgWindow(banana, this)" src="Banana.png" />
-            <img id="img1" class="child" onclick="imgWindow(coconut, this)" src="Coconut.png" />
-            <img id="img2" class="child" onclick="imgWindow(pome, this)" src="Pomegranate.png" />
-            <img id="img3" class="child" onclick="imgWindow(mango, this)" src="Mango.png" />
-            <img id="img4" class="child" onclick="imgWindow(pineapple, this)" src="Pineapple.png" />
-        </div>
-        <div style="margin-top: 100px;">
-            <table border="1">
-                <tr><td>Banana: </td>     <td id="0"></td><td id="desc0"></td></tr>
-                <tr><td>Coconut: </td>    <td id="1"></td><td id="desc1"></td></tr>
-                <tr><td>Pomegranate: </td><td id="2"></td><td id="desc2"></td></tr>
-                <tr><td>Mango: </td>      <td id="3"></td><td id="desc3"></td></tr>
-                <tr><td>Pineapple: </td>  <td id="4"></td><td id="desc4"></td></tr>
-            </table>
-            <button onclick="reset()">Reset to Rare</button>
-            <button onclick="solution()">Reset to Solution</button>
-        </div>
-        <div>
-            <img src="http://www.winterhome.net/dtrpg_graphics/pigpen_typical_small.png"/>
-        </div>
-    </body>
+        }
+        window.addEventListener('load', () => { setTimeout(update, 200) }, false);
+    </script>
+    <style>
+        body {
+            padding: 0;
+            padding-top: 100px;
+            margin: 0;
+        }
+
+        .flex-container {
+            display: flex;
+            flex-wrap: nowrap;
+            width: 100dvw;
+        }
+
+        .child {
+            display: block;
+            object-fit: contain;
+            flex: 1;
+            width: 20%;
+            height: auto;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex-container">
+        <img id="img0" class="child" onclick="imgWindow(banana, this)" src="Banana.png" />
+        <img id="img1" class="child" onclick="imgWindow(coconut, this)" src="Coconut.png" />
+        <img id="img2" class="child" onclick="imgWindow(pome, this)" src="Pomegranate.png" />
+        <img id="img3" class="child" onclick="imgWindow(mango, this)" src="Mango.png" />
+        <img id="img4" class="child" onclick="imgWindow(pineapple, this)" src="Pineapple.png" />
+    </div>
+    <div style="margin-top: 100px;">
+        <table border="1">
+            <tr>
+                <td>Banana: </td>
+                <td id="0"></td>
+                <td id="encoded0" class="encoded"></td>
+                <td id="desc0"></td>
+            </tr>
+            <tr>
+                <td>Coconut: </td>
+                <td id="1"></td>
+                <td id="encoded1" class="encoded"></td>
+                <td id="desc1"></td>
+            </tr>
+            <tr>
+                <td>Pomegranate: </td>
+                <td id="2"></td>
+                <td id="encoded2" class="encoded"></td>
+                <td id="desc2"></td>
+            </tr>
+            <tr>
+                <td>Mango: </td>
+                <td id="3"></td>
+                <td id="encoded3" class="encoded"></td>
+                <td id="desc3"></td>
+            </tr>
+            <tr>
+                <td>Pineapple: </td>
+                <td id="4"></td>
+                <td id="encoded4" class="encoded"></td>
+                <td id="desc4"></td>
+            </tr>
+        </table>
+        <button onclick="reset()">Reset to Rare</button>
+        <button onclick="solution()">Reset to Solution</button>
+    </div>
+    <div>
+        <img src="Pigpen_cipher_key.png" />
+    </div>
+</body>
+
 </html>
