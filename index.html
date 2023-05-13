@@ -58,14 +58,28 @@
                 "RRXC",
                 "PPWI",
             ]];
-            var rots = [0,0,0,0,0];
-            var flips = [false, false, false, false, false];
+
+            var rots = [];
+            var flips = [];
 
             let banana = 0;
             let coconut = 1;
             let pome = 2;
             let mango = 3;
             let pineapple = 4;
+
+            function solution() {
+                rots = [2, 2, 0, 3, 0];
+                flips = [false, true, false, false, true];
+                update();
+            }
+
+            function reset() {
+                rots = [0,0,0,0,0];
+                flips = [false, false, false, false, false];
+                update();
+            }
+
             function imgWindow(x, e) {
                 var rot = rots[x];
                 var flip = flips[x];
@@ -74,19 +88,31 @@
                     rot = 0;
                     flip = !flip;
                 }
-                if(flip) {
-                    e.style.transform = "rotate("+(rot-2)*90+"deg) scaleX(-1)";
-                    e.style.border = "red 1px solid";
-                } else {
-                    e.style.transform = "rotate("+rot*90+"deg)";
-                    e.style.border = "black 1px solid";
-                }
-                
                 rots[x] = rot;
                 flips[x] = flip;
-                txti=flip?rot+4:rot;
-                document.getElementById(x).textContent = txt[x][txti];
+                update();
+                
             }
+            function update() {
+                for (let x = 0; x < 5; x++) {
+                    var rot = rots[x];
+                    var flip = flips[x];
+                    e = document.getElementById("img"+x);
+                    if(flip) {
+                        e.style.transform = "rotate("+(rot-2)*90+"deg) scaleX(-1)";
+                        e.style.border = "red 1px solid";
+                    } else {
+                        e.style.transform = "rotate("+rot*90+"deg)";
+                        e.style.border = "black 1px solid";
+                    }
+                    
+                    
+                    txti=flip?rot+4:rot;
+                    document.getElementById(x).textContent = txt[x][txti];
+                    document.getElementById("desc"+x).textContent = "Rotate: "+rot+" Flipped: "+flip;
+                }
+            }
+            window.addEventListener('load', ()=>{setTimeout(solution, 200)}, false);
         </script>
         <style>
             body {
@@ -112,20 +138,22 @@
     </head>
     <body>
         <div class="flex-container">
-            <img class="child" onclick="imgWindow(banana, this)" src="Banana.png" />
-            <img class="child" onclick="imgWindow(coconut, this)" src="Coconut.png" />
-            <img class="child" onclick="imgWindow(pome, this)" src="Pomegranate.png" />
-            <img class="child" onclick="imgWindow(mango, this)" src="Mango.png" />
-            <img class="child" onclick="imgWindow(pineapple, this)" src="Pineapple.png" />
+            <img id="img0" class="child" onclick="imgWindow(banana, this)" src="Banana.png" />
+            <img id="img1" class="child" onclick="imgWindow(coconut, this)" src="Coconut.png" />
+            <img id="img2" class="child" onclick="imgWindow(pome, this)" src="Pomegranate.png" />
+            <img id="img3" class="child" onclick="imgWindow(mango, this)" src="Mango.png" />
+            <img id="img4" class="child" onclick="imgWindow(pineapple, this)" src="Pineapple.png" />
         </div>
         <div style="margin-top: 100px;">
             <table border="1">
-                <tr><td>Banana: </td>     <td id="0">BQF</td></tr>
-                <tr><td>Coconut: </td>    <td id="1">PNB</td></tr>
-                <tr><td>Pomegranate: </td><td id="2">ASL</td></tr>
-                <tr><td>Mango: </td>      <td id="3">BSG</td></tr>
-                <tr><td>Pineapple: </td>  <td id="4">AYPP</td></tr>
+                <tr><td>Banana: </td>     <td id="0"></td><td id="desc0"></td></tr>
+                <tr><td>Coconut: </td>    <td id="1"></td><td id="desc1"></td></tr>
+                <tr><td>Pomegranate: </td><td id="2"></td><td id="desc2"></td></tr>
+                <tr><td>Mango: </td>      <td id="3"></td><td id="desc3"></td></tr>
+                <tr><td>Pineapple: </td>  <td id="4"></td><td id="desc4"></td></tr>
             </table>
+            <button onclick="reset()">Reset to Rare</button>
+            <button onclick="solution()">Reset to Solution</button>
         </div>
     </body>
 </html>
