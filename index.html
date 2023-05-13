@@ -24,6 +24,7 @@
         .key {
             padding: 0 16px;
         }
+
         body {
             padding: 0;
             margin: 0;
@@ -48,8 +49,13 @@
             margin: 0 auto;
         }
 
-        .forward {background-color: #90ca92;}
-        .backward {background-color: #c98080;}
+        .forward {
+            background-color: #90ca92;
+        }
+
+        .backward {
+            background-color: #c98080;
+        }
     </style>
     <script>
         const default_cipher = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -65,6 +71,8 @@
         } else {
             cipher = cipher_in.toUpperCase().split("");
         }
+
+        var key = url.searchParams.get("key") == null ? "" : url.searchParams.get("key");
 
         var txt = [[
             "BQF",
@@ -115,7 +123,7 @@
 
         function arrFromUrl(urlVal, defValue, type) {
             var inVal = url.searchParams.get(urlVal);
-            if(inVal === null) return defValue;
+            if (inVal === null) return defValue;
             return inVal.split(",").map(type);
         }
 
@@ -125,7 +133,8 @@
 
         var rots = arrFromUrl("rotation", [2, 2, 0, 3, 0], Number);
         var flips = arrFromUrl("flip", [false, true, false, false, true], bool);
-        var reversed = arrFromUrl("reversed", [false, false, false, false, false], bool);
+        var reversed = arrFromUrl("reversed", [true, false, false, true, true], bool);
+        var orders = arrFromUrl("order", [3, 1, 0, 2, 4], Number);
 
         let banana = 0;
         let coconut = 1;
@@ -136,18 +145,33 @@
         function solution() {
             rots = [2, 2, 0, 3, 0];
             flips = [false, true, false, false, true];
-            update();
+            reversed = [true, false, false, true, true];
+            orders = [3, 1, 0, 2, 4];
+            key = "BOUNTY";
+            update(true);
         }
 
         function reset() {
             rots = [0, 0, 0, 0, 0];
             flips = [false, false, false, false, false];
             reversed = [false, false, false, false, false];
-            update();
+            orders = [0, 1, 4, 3, 2];
+            key = "";
+            update(true);
         }
 
         function setPreset() {
             document.getElementById("cipher").value = document.getElementById("presets").value;
+            update();
+        }
+
+        function setOrder(x) {
+            var order_e = document.getElementById("order" + x);
+            var newOrder = Number(order_e.value);
+            var existingIndex = orders.findIndex(e => e == newOrder);
+            var temp = orders[x];
+            orders[x] = newOrder;
+            orders[existingIndex] = temp;
             update();
         }
 
@@ -191,10 +215,12 @@
             update();
         }
 
-        function reverseStr(i, s){
-            if(!reversed[i]) return s;
+        function reverseStr(i, s) {
+            if (!reversed[i]) return s;
             return [...s].reverse().join("");
         }
+
+        const fruits = ["banana", "coconut", "pome", "mango", "pineapple"];
 
         function update(firstrun) {
             var cipher_element = document.getElementById("cipher");
@@ -202,8 +228,9 @@
                 solution();
             }
 
-            if(firstrun) {
+            if (firstrun) {
                 cipher_element.value = cipher.join("");
+                document.getElementById("key").value = key;
             }
 
             if (validateCipher(cipher_element.value)) {
@@ -216,6 +243,8 @@
                     cipher_element.setCustomValidity("Invalid Cipher");
             }
 
+            key = document.getElementById("key").value;
+
             var showImg = cipher.join("") === default_cipher;
             document.getElementById("defaultKey").style.visibility = showImg ? "visible" : "hidden";
 
@@ -224,24 +253,27 @@
             url.searchParams.set("rotation", rots);
             url.searchParams.set("flip", flips);
             url.searchParams.set("reversed", reversed);
+            url.searchParams.set("order", orders);
+            url.searchParams.set("key", key);
             history.pushState({}, "", url);
 
 
-            const total = [];
+            var reordered = ["", "", "", "", ""];
+            var reorderedEncoded = ["", "", "", "", ""];
             for (let x = 0; x < 5; x++) {
                 var rev_e = document.getElementById("reverse" + x);
-                if(reversed[x]) {
+                if (reversed[x]) {
                     rev_e.className = "backward";
                     rev_e.textContent = "order ← ↑";
                 } else {
                     rev_e.className = "forward";
                     rev_e.textContent = "order → ↓";
                 }
-                
+
                 var rot = rots[x];
                 var flip = flips[x];
 
-                flip_e = document.getElementById("flip"+x);
+                flip_e = document.getElementById("flip" + x);
                 flip_e.className = flip ? "backward" : "";
 
                 e = document.getElementById("img" + x);
@@ -255,29 +287,58 @@
 
                 txti = flip ? rot + 4 : rot;
                 chunk = reverseStr(x, substitute(txt[x][txti]));
-                total.push(chunk);
+                chunkEncoded = reverseStr(x, txt[x][txti]);
                 document.getElementById(x).textContent = chunk;
-                document.getElementById("encoded" + x).textContent = reverseStr(x, txt[x][txti]);
+                document.getElementById("encoded" + x).textContent = chunkEncoded;
                 document.getElementById("desc" + x).textContent = "Rotate: " + rot + " Flipped: " + flip;
-                rot_e = document.getElementById("rotate"+x);
+                rot_e = document.getElementById("rotate" + x);
                 rot_e.textContent = "Rotate: " + rot;
                 default_cipher.split("").forEach((c, index) => document.getElementById(c).value = cipher[index]);
+                document.getElementById("order" + x).selectedIndex = orders[x];
+                for (let e of document.getElementsByClassName(fruits[x])) {
+                    e.style.order = orders[x];
+                }
+                reordered[orders[x]] = chunk;
+                reorderedEncoded[orders[x]] = chunkEncoded;
             }
-            document.getElementById("total1").value = total.join("");
-            document.getElementById("total2").value = total.join(".");
+
+            document.getElementById("resultVig").value = vig(reordered.join(""), key);
+            document.getElementById("total3").value = reorderedEncoded.join("");
+            document.getElementById("total1").value = reordered.join("");
+            document.getElementById("total2").value = reordered.join(".");
         }
-        window.addEventListener('load', () => { setTimeout(()=>update(true), 200) }, false);
+
+        function vig(plainMsg, keyIn) {
+            var cypher = "";
+            var alphabet = default_cipher;
+            if(key.length == 0) return plainMsg;
+            keyIn = key.toUpperCase();
+            plainMsg = plainMsg.toUpperCase();
+            for (var i = 0; i < plainMsg.length; i++) {
+                var currentLetter = plainMsg[i];
+                keyIndex = alphabet.indexOf(key[i%key.length]);
+                letterIndex = alphabet.indexOf(currentLetter);
+                var outIndex = letterIndex - keyIndex;
+                if(outIndex < 0) outIndex += 26;
+                cypher += alphabet[outIndex];
+            }
+            return cypher;
+        };
+
+        window.addEventListener('load', () => { setTimeout(() => update(true), 200) }, false);
     </script>
 </head>
 
 <body>
     <div class="flex-container" style="margin-top: 30px;">
         <div>
-            <button onclick="reset()">Reset to Rare</button><br/>
-            <button onclick="solution()">Reset to Solution</button><br/>
-            <input disabled style="width: 26em;" onblur="update()" class="encoded" value="ABCDEFGHIJKLMNOPQRSTUVWXYZ"/><br/>
+            <button onclick="reset()">Reset to Rare</button><br />
+            <button onclick="solution()">Reset to Solution</button><br />
+            <input disabled style="width: 26em;" onblur="update()" class="encoded"
+                value="ABCDEFGHIJKLMNOPQRSTUVWXYZ" /><br />
             <input id="cipher" minlength="26" maxlength="26" style="width: 26em;" onblur="update()" />
-            <select id="presets" onChange="setPreset()"> <option selected="true" disabled="disabled">presets</option>
+            <select id="presets" onChange="setPreset()">
+                <option selected="true" disabled="disabled">presets</option>
                 <option value="ABCDEFGHIJKLMNOPQRSTUVWXYZ">#0 ⌗ ⌗• ✕ ✕•</option>
                 <option value="ABCDEFGHIJKLMNOPQRSTVUWXZY">#1 ⌗ ⌗• ✕⟲ ✕•⟲</option>
                 <option value="ABCDEFGHINOPQRSTUVJKLMWXYZ">#2 ⌗ ✕ ⌗• ✕•</option>
@@ -289,7 +350,7 @@
                 <option value="BDFHJLNPRACEGIKMOQT-V-S-U-">#8 La Buse</option>
                 <option value="BDFHJLNPRACEGIKMOQTZVXSYUW">#9 La Buse (predicted finished)</option>
                 <option value="BOUNTYACDEFGHIJKLMPQRSVWXZ">#10 bounty+A-Z</option>
-                
+
             </select>
         </div>
         <div style="font-size: large;" class="flex-container">
@@ -434,14 +495,21 @@
         </div>
     </div>
     <div class="flex-container" style="margin-top: 100px;">
-        <img id="img0" class="child" onclick="imgWindow(banana, this)" src="Banana.png" />
-        <img id="img1" class="child" onclick="imgWindow(coconut, this)" src="Coconut.png" />
-        <img id="img2" class="child" onclick="imgWindow(pome, this)" src="Pomegranate.png" />
-        <img id="img3" class="child" onclick="imgWindow(mango, this)" src="Mango.png" />
-        <img id="img4" class="child" onclick="imgWindow(pineapple, this)" src="Pineapple.png" />
+        <img id="img0" class="child banana" onclick="imgWindow(banana, this)" src="Banana.png" />
+        <img id="img1" class="child coconut" onclick="imgWindow(coconut, this)" src="Coconut.png" />
+        <img id="img2" class="child pome" onclick="imgWindow(pome, this)" src="Pomegranate.png" />
+        <img id="img3" class="child mango" onclick="imgWindow(mango, this)" src="Mango.png" />
+        <img id="img4" class="child pineapple" onclick="imgWindow(pineapple, this)" src="Pineapple.png" />
     </div>
     <div class="flex-container" style="margin-top: 100px;">
-        <div class="child" style="text-align: center;">
+        <div class="child banana" style="text-align: center;">
+            <select id="order0" onChange="setOrder(banana)">
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+            </select>
             <button id="rotate0" onclick="rotate_click(banana)">rotate</button>
             <button id="flip0" onclick="flip_click(banana)">flip</button>
             <button id="reverse0" onclick="reverse_click(banana)">reverse</button>
@@ -452,7 +520,14 @@
                 <td id="desc0"></td>
             </table>
         </div>
-        <div class="child" style="text-align: center;">
+        <div class="child coconut" style="text-align: center;">
+            <select id="order1" onChange="setOrder(coconut)">
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+            </select>
             <button id="rotate1" onclick="rotate_click(coconut)">rotate</button>
             <button id="flip1" onclick="flip_click(coconut)">flip</button>
             <button id="reverse1" onclick="reverse_click(coconut)">reverse</button>
@@ -465,7 +540,14 @@
                 </tr>
             </table>
         </div>
-        <div class="child" style="text-align: center;">
+        <div class="child pome" style="text-align: center;">
+            <select id="order2" onChange="setOrder(pome)">
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+            </select>
             <button id="rotate2" onclick="rotate_click(pome)">rotate</button>
             <button id="flip2" onclick="flip_click(pome)">flip</button>
             <button id="reverse2" onclick="reverse_click(pome)">reverse</button>
@@ -478,7 +560,14 @@
                 </tr>
             </table>
         </div>
-        <div class="child" style="text-align: center;">
+        <div class="child mango" style="text-align: center;">
+            <select id="order3" onChange="setOrder(mango)">
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+            </select>
             <button id="rotate3" onclick="rotate_click(mango)">rotate</button>
             <button id="flip3" onclick="flip_click(mango)">flip</button>
             <button id="reverse3" onclick="reverse_click(mango)">reverse</button>
@@ -491,7 +580,14 @@
                 </tr>
             </table>
         </div>
-        <div class="child" style="text-align: center;">
+        <div class="child pineapple" style="text-align: center;">
+            <select id="order4" onChange="setOrder(pineapple)">
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+            </select>
             <button id="rotate4" onclick="rotate_click(pineapple)">rotate</button>
             <button id="flip4" onclick="flip_click(pineapple)">flip</button>
             <button id="reverse4" onclick="reverse_click(pineapple)">reverse</button>
@@ -506,12 +602,11 @@
         </div>
     </div>
     <div class="flex-container" style="padding-top: 16px;">
-        <div class="child"></div>
-        <div class="child"></div>
-        <input id="total1" disabled class="child"/>
-        <input id="total2" disabled class="child"/>
-        <div class="child"></div>
-        <div class="child"></div>
+        <input id="total3" disabled class="child" style="font-family: pigpen;" />
+        <input id="total1" disabled class="child" />
+        <input id="total2" disabled class="child" />
+        <input id="key" placeholder="key" class="child" onChange="update()"/>
+        <input id="resultVig" disabled class="child" />
     </div>
     <div>
         <img id="defaultKey" src="Pigpen_cipher_key_landscape.png" />
