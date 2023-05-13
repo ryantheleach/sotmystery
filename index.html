@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
 <html>
 
 <head>
@@ -51,6 +47,9 @@
         .child>table {
             margin: 0 auto;
         }
+
+        .forward {background-color: #90ca92;}
+        .backward {background-color: #c98080;}
     </style>
     <script>
         const default_cipher = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -113,8 +112,20 @@
             "RRXC",
             "PPWI",
         ]];
-        var rots = url.searchParams.get("rotation") | null;
-        var flips = url.searchParams.get("flip") | null;
+
+        function arrFromUrl(urlVal, defValue, type) {
+            var inVal = url.searchParams.get(urlVal);
+            if(inVal === null) return defValue;
+            return inVal.split(",").map(type);
+        }
+
+        function bool(str) {
+            return str == "true";
+        }
+
+        var rots = arrFromUrl("rotation", [2, 2, 0, 3, 0], Number);
+        var flips = arrFromUrl("flip", [false, true, false, false, true], bool);
+        var reversed = arrFromUrl("reversed", [false, false, false, false, false], bool);
 
         let banana = 0;
         let coconut = 1;
@@ -131,6 +142,7 @@
         function reset() {
             rots = [0, 0, 0, 0, 0];
             flips = [false, false, false, false, false];
+            reversed = [false, false, false, false, false];
             update();
         }
 
@@ -150,6 +162,16 @@
 
         function substitute(s) {
             return s.split("").map(c => cipher[default_cipher.indexOf(c)]).join("");
+        }
+
+        function reverse(x) {
+            reversed[x] = !reversed[x];
+            update();
+        }
+
+        function reverseStr(i, s){
+            if(!reversed[i]) return s;
+            return [...s].reverse().join("");
         }
 
         function update(firstrun) {
@@ -179,11 +201,21 @@
             url.searchParams.set("cipher", cipher.join(""));
             url.searchParams.set("rotation", rots);
             url.searchParams.set("flip", flips);
+            url.searchParams.set("reversed", reversed);
             history.pushState({}, "", url);
 
 
             const total = [];
             for (let x = 0; x < 5; x++) {
+                var rev_e = document.getElementById("reverse" + x);
+                if(reversed[x]) {
+                    rev_e.className = "backward";
+                    rev_e.textContent = "order ← ↑";
+                } else {
+                    rev_e.className = "forward";
+                    rev_e.textContent = "order → ↓";
+                }
+                
                 var rot = rots[x];
                 var flip = flips[x];
                 e = document.getElementById("img" + x);
@@ -196,10 +228,10 @@
                 }
 
                 txti = flip ? rot + 4 : rot;
-                chunk = substitute(txt[x][txti]);
+                chunk = reverseStr(x, substitute(txt[x][txti]));
                 total.push(chunk);
                 document.getElementById(x).textContent = chunk;
-                document.getElementById("encoded" + x).textContent = txt[x][txti];
+                document.getElementById("encoded" + x).textContent = reverseStr(x, txt[x][txti]);
                 document.getElementById("desc" + x).textContent = "Rotate: " + rot + " Flipped: " + flip;
                 
                 default_cipher.split("").forEach((c, index) => document.getElementById(c).value = cipher[index]);
@@ -368,7 +400,8 @@
         <img id="img4" class="child" onclick="imgWindow(pineapple, this)" src="Pineapple.png" />
     </div>
     <div class="flex-container" style="margin-top: 100px;">
-        <div class="child">
+        <div class="child" style="text-align: center;">
+            <button id="reverse0" onclick="reverse(0)">reverse</button>
             <table border="1">
                 <td>Banana: </td>
                 <td id="0"></td>
@@ -376,7 +409,8 @@
                 <td id="desc0"></td>
             </table>
         </div>
-        <div class="child">
+        <div class="child" style="text-align: center;">
+            <button id="reverse1" onclick="reverse(1)">reverse</button>
             <table border="1">
                 <tr>
                     <td>Coconut: </td>
@@ -386,7 +420,8 @@
                 </tr>
             </table>
         </div>
-        <div class="child">
+        <div class="child" style="text-align: center;">
+            <button id="reverse2" onclick="reverse(2)">reverse</button>
             <table border="1">
                 <tr>
                     <td>Pomegranate: </td>
@@ -396,7 +431,8 @@
                 </tr>
             </table>
         </div>
-        <div class="child">
+        <div class="child" style="text-align: center;">
+            <button id="reverse3" onclick="reverse(3)">reverse</button>
             <table border="1">
                 <tr>
                     <td>Mango: </td>
@@ -406,7 +442,8 @@
                 </tr>
             </table>
         </div>
-        <div class="child">
+        <div class="child" style="text-align: center;">
+            <button id="reverse4" onclick="reverse(4)">reverse</button>
             <table border="1">
                 <tr>
                     <td>Pineapple: </td>
