@@ -160,11 +160,28 @@
 
         }
 
+        function rotate_click(x) {
+            var rot = rots[x];
+            rot = rot + 1;
+            if (rot >= 4) {
+                rot = 0;
+            }
+            rots[x] = rot;
+            update();
+        }
+
+        function flip_click(x) {
+            var flip = flips[x];
+            flip = !flip;
+            flips[x] = flip;
+            update();
+        }
+
         function substitute(s) {
             return s.split("").map(c => cipher[default_cipher.indexOf(c)]).join("");
         }
 
-        function reverse(x) {
+        function reverse_click(x) {
             reversed[x] = !reversed[x];
             update();
         }
@@ -218,6 +235,10 @@
                 
                 var rot = rots[x];
                 var flip = flips[x];
+
+                flip_e = document.getElementById("flip"+x);
+                flip_e.className = flip ? "backward" : "";
+
                 e = document.getElementById("img" + x);
                 if (flip) {
                     e.style.transform = "rotate(" + (rot - 2) * 90 + "deg) scaleX(-1)";
@@ -233,7 +254,8 @@
                 document.getElementById(x).textContent = chunk;
                 document.getElementById("encoded" + x).textContent = reverseStr(x, txt[x][txti]);
                 document.getElementById("desc" + x).textContent = "Rotate: " + rot + " Flipped: " + flip;
-                
+                rot_e = document.getElementById("rotate"+x);
+                rot_e.textContent = "Rotate: " + rot;
                 default_cipher.split("").forEach((c, index) => document.getElementById(c).value = cipher[index]);
             }
             document.getElementById("total1").value = total.join("");
@@ -401,7 +423,9 @@
     </div>
     <div class="flex-container" style="margin-top: 100px;">
         <div class="child" style="text-align: center;">
-            <button id="reverse0" onclick="reverse(0)">reverse</button>
+            <button id="rotate0" onclick="rotate_click(banana)">rotate</button>
+            <button id="flip0" onclick="flip_click(banana)">flip</button>
+            <button id="reverse0" onclick="reverse_click(banana)">reverse</button>
             <table border="1">
                 <td>Banana: </td>
                 <td id="0"></td>
@@ -410,7 +434,9 @@
             </table>
         </div>
         <div class="child" style="text-align: center;">
-            <button id="reverse1" onclick="reverse(1)">reverse</button>
+            <button id="rotate1" onclick="rotate_click(coconut)">rotate</button>
+            <button id="flip1" onclick="flip_click(coconut)">flip</button>
+            <button id="reverse1" onclick="reverse_click(coconut)">reverse</button>
             <table border="1">
                 <tr>
                     <td>Coconut: </td>
@@ -421,7 +447,9 @@
             </table>
         </div>
         <div class="child" style="text-align: center;">
-            <button id="reverse2" onclick="reverse(2)">reverse</button>
+            <button id="rotate2" onclick="rotate_click(pome)">rotate</button>
+            <button id="flip2" onclick="flip_click(pome)">flip</button>
+            <button id="reverse2" onclick="reverse_click(pome)">reverse</button>
             <table border="1">
                 <tr>
                     <td>Pomegranate: </td>
@@ -432,7 +460,9 @@
             </table>
         </div>
         <div class="child" style="text-align: center;">
-            <button id="reverse3" onclick="reverse(3)">reverse</button>
+            <button id="rotate3" onclick="rotate_click(mango)">rotate</button>
+            <button id="flip3" onclick="flip_click(mango)">flip</button>
+            <button id="reverse3" onclick="reverse_click(mango)">reverse</button>
             <table border="1">
                 <tr>
                     <td>Mango: </td>
@@ -443,7 +473,9 @@
             </table>
         </div>
         <div class="child" style="text-align: center;">
-            <button id="reverse4" onclick="reverse(4)">reverse</button>
+            <button id="rotate4" onclick="rotate_click(pineapple)">rotate</button>
+            <button id="flip4" onclick="flip_click(pineapple)">flip</button>
+            <button id="reverse4" onclick="reverse_click(pineapple)">reverse</button>
             <table border="1">
                 <tr>
                     <td>Pineapple: </td>
