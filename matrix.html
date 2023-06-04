@@ -55,13 +55,15 @@
     {
       this.x = x;
       this.y = y;
+      this.change = 0;
     }
 
     Point.prototype.draw = function(ctx){
 
+      if(this.change++ %4 == 0) {
       this.value = charArr[randomInt(0,charArr.length-1)].toUpperCase();
+    }
       this.speed = randomFloat(1,4);
-
 
       ctx2.fillStyle = "rgba(255,255,255,0.8)";
       ctx2.font = fontSize+"px pigpen";
@@ -74,7 +76,7 @@
 
 
         this.y += this.speed;
-        this.x += this.speed - 2.5;
+        this.x += this.speed -2.5;
         if(this.y > ch)
         {
           this.y = randomFloat(-100,0);
@@ -83,7 +85,9 @@
     }
 
     for(var i = 0; i < maxColums ; i++) {
-      fallingCharArr.push(new Point(i*fontSize,randomFloat(-500,0)));
+        for(var j = 0; j < maxColums/2 ; j++) {
+            fallingCharArr.push(new Point(i*fontSize,randomFloat(-100*maxColums/2,0)));
+        }
     }
 
 
